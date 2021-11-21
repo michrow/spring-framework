@@ -1,0 +1,409 @@
+## 代码准备
+
+Spring Framework 是开源的，代码托管在 GitHub 上： [Spring Framework](https://github.com/spring-projects/spring-framework)。任何人都可以方便地获得它的源代码。所以，如果想阅读 Spring 的源代码，当然是直接把代码克隆到本地，然后直接在 IDE（推荐 IDEA）中进行调试了。另外，还需要存放自己写一些测试和文档。所以，最好把代码 fork 到自己的账户下，从 `master` 上切出一个新分支并 push 到自己的 Repo 中，这样自己就可以随意更新了。具体步骤如下：
+
+1. 克隆代码
+
+   ```
+   # 直接克隆原始仓库为 origin
+   git clone git@github.com:spring-projects/spring-framework.git
+   ```
+
+2. fork 代码，D瓜哥直接 fork 到自己账户下了： [diguage/spring-framework](https://github.com/diguage/spring-framework)。
+
+3. 添加原创仓库地址：
+
+   ```
+   # 添加自己仓库为 diguage
+   # 这样就能在所有项目中保持命名的一致性，方便标识
+   git remote add diguage git@github.com:diguage/spring-framework.git
+   ```
+
+4. 创建新分支
+
+   ```
+   # 切换到V5.2.18.RELEASE(高版本可能会因为JDK等出现各种问题)
+   git checkout V5.2.18.RELEASE
+   
+   # 创建新分支
+   git switch -c analysis
+   
+   # 将新分支 push 到自己的 Repo 中
+   git push diguage analysis
+   ```
+
+   这样，在这个新分支上，就可以随意折腾了。
+
+5. 下载依赖
+
+   ```
+   # Mac or Linux
+   ./gradlew clean && ./gradlew  :spring-oxm:compileTestJava && ./gradlew test
+   
+   # Windows
+   gradlew.bat clean && gradlew.bat  :spring-oxm:compileTestJava && gradlew.bat test
+   ```
+
+   上述操作会很慢，如果想加快速度，可以给 Gradle 配置一下阿里云的 Maven 镜像。
+
+   ```
+   // 在用户根目录下，创建 .gradle 目录，然后在其中创建 init.gradle 文件，
+   // 目录如：~/.gradle/init.gradle。最后，将下面内容加入到文件中：
+   
+   
+   buildscript {
+     repositories {
+       maven { url 'https://maven.aliyun.com/repository/public';}
+       maven { url 'https://maven.aliyun.com/repositories/jcenter'; }
+       maven { url 'https://maven.aliyun.com/repositories/google'; }
+       maven { url 'https://maven.aliyun.com/repository/central'; }
+       maven { url 'https://maven.aliyun.com/repository/spring/'; }
+       maven { url 'https://maven.aliyun.com/repository/gradle-plugin'; }
+       mavenLocal()
+       mavenCentral()
+     }
+   }
+   
+   allprojects {
+     repositories {
+       maven { url 'https://maven.aliyun.com/repository/public';}
+       maven { url 'https://maven.aliyun.com/repositories/jcenter'; }
+       maven { url 'https://maven.aliyun.com/repositories/google'; }
+       maven { url 'https://maven.aliyun.com/repository/central'; }
+       maven { url 'https://maven.aliyun.com/repository/spring/'; }
+       maven { url 'https://maven.aliyun.com/repository/gradle-plugin'; }
+       mavenLocal()
+       mavenCentral()
+     }
+   }
+   ```
+
+1. 将代码导入到 IDE 中，为了方便添加自己的测试代码，可以新建一个 Gradle 模块。例如 [diguage/spring-framework/truman at analysis](https://github.com/diguage/spring-framework/tree/analysis/truman)：
+
+   ```
+   tree spring-framework
+   ├── # 省略 N 行
+   ├── spring-aop
+   ├── spring-beans
+   ├── spring-context
+   ├── spring-core
+   ├── src
+   └── truman    # 个人新建模块
+       ├── build.gradle
+       ├── docs  # 存放文档，可以把阅读代码的笔记放在这里
+       │   ├── AnnotationAwareAspectJAutoProxyCreator.puml
+       │   ├── BeanDefinition.puml
+       │   ├── BeanFactory.puml
+       │   ├── ConfigurationClassPostProcessor.puml
+       │   └── notes.adoc
+       └── src   # 存放自己的调试代码
+           ├── main
+           │   ├── java
+           │   │   └── com
+           │   │       └── diguage
+           │   │           └── truman
+           │   │               ├── aop
+           │   │               │   ├── AopTest.java
+           │   │               │   ├── DeclareParentsAopTest.java
+           │   │               │   ├── FinalTest.java
+           │   │               │   ├── MoreAopTest.java
+           │   │               │   └── TargetSourceTest.java
+           │   │               ├── context
+           │   │               │   ├── ApplicationContextAwareTest.java
+           │   │               │   ├── ApplicationListenerTest.java
+           │   │               │   ├── BeanDefinitionRegistryPostProcessorTest.java
+           │   │               │   ├── BeanFactoryPostProcessorAutowireTest.java
+           │   │               │   ├── BeanFactoryPostProcessorTest.java
+           │   │               │   ├── BeanPostProcessorAnnoBeanTest.java
+           │   │               │   ├── BeanPostProcessorAutowireTest.java
+           │   │               │   ├── BeanPostProcessorTest.java
+           │   │               │   ├── CircularDependenceConstructorTest.java
+           │   │               │   ├── CircularDependencePrototypeTest.java
+           │   │               │   ├── CircularDependenceSingletonTest.java
+           │   │               │   ├── FactoryBeanTest.java
+           │   │               │   ├── InitializingBeanTest.java
+           │   │               │   ├── InstantiationAwareBeanPostProcessorTest.java
+           │   │               │   ├── LifecycleTest.java
+           │   │               │   ├── ObjectFactoryTest.java
+           │   │               │   ├── PropertyValuesTest.java
+           │   │               │   └── mybatis
+           │   │               ├── ext
+           │   │               │   ├── DggNamespaceHandler.java
+           │   │               │   ├── ExtensionTest.java
+           │   │               │   ├── User.java
+           │   │               │   └── UserBeanDefinitionParser.java
+           │   │               ├── jdbc
+           │   │               │   └── JdbcTest.java
+           │   │               └── mybatis
+           │   │                   ├── Employees.java
+           │   │                   ├── EmployeesMapper.java
+           │   │                   └── MybatisTest.java
+           │   └── resources
+           │       ├── META-INF
+           │       │   ├── dgg.xsd
+           │       │   ├── spring.handlers
+           │       │   └── spring.schemas
+           │       ├── com
+           │       │   └── diguage
+           │       │       └── truman
+           │       │           └── ext
+           │       │               └── dgg.xml
+           │       └── log4j2.xml
+           ├── test
+           │   ├── java
+           │   └── resources
+           └── testFixtures
+               ├── java
+               └── resources
+   ```
+
+2. 更新代码和提交修改
+
+   ```
+   # 在 master 分支上更新代码
+   git pull
+   
+   # 然后切换到 analysis 分支，同步更新
+   git rebase master
+   ```
+
+## 示例代码
+
+原来使用 Spring，需要 XML 文件。甚至，现在的文档中也有大量的 XML 配置。为了方便起见，D瓜哥介绍一个不需要使用 XML 配置文件可以跑起来的写法：
+
+```
+package com.diguage.truman.aop;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.type.AnnotationMetadata;
+
+import javax.annotation.Resource;
+
+/*
+ * @author D瓜哥, https://www.diguage.com/
+ * @since 2020-06-02 11:12
+ */
+public class AopTest {
+  @Test
+  public void test() {
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    context.register(Config.class);
+    context.refresh();
+    UserService bean = context.getBean(UserService.class);
+    bean.test();
+    bean.getDesc();
+    bean.setDesc("This is a test.");
+
+    String user = bean.getById(119);
+    System.out.println(user);
+
+    BeanDefinition definition = context.getBeanDefinition(UserService.class.getName());
+    System.out.println(definition);
+  }
+
+  @Configuration
+  @Import(AopImportSelector.class)
+  @EnableAspectJAutoProxy(exposeProxy = true)
+  public static class Config {
+  }
+
+  // 使用 @Import 和 ImportSelector 搭配，就可以省去 XML 配置
+  public static class AopImportSelector implements ImportSelector {
+    @Override
+    public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+      return new String[]{
+          UserDao.class.getName(),
+          UserService.class.getName(),
+          TestAspect.class.getName()
+      };
+    }
+  }
+
+  @Aspect
+  public static class TestAspect {
+    @Pointcut("execution( com.diguage.truman.aop.AopTest$UserService.test(..))")
+    public void test() {
+    }
+
+    @Before("test()")
+    public void beforeTest() {
+      System.out.println("beforeTest");
+    }
+
+    @After("test()")
+    public void afterTest() {
+      System.out.println("afterTest");
+    }
+
+    @Around("test()")
+    public Object aroundTest(ProceedingJoinPoint pjp) {
+      System.out.println("aroundBefore1");
+      Object restul = null;
+      Signature signature = pjp.getSignature();
+      System.out.println(pjp.getKind());
+      Object target = pjp.getTarget();
+      System.out.println(target.getClass().getName() + "#" + signature.getName());
+      try {
+        restul = pjp.proceed();
+      } catch (Throwable throwable) {
+        throwable.printStackTrace();
+      }
+      System.out.println("aroundAfter1");
+      return restul;
+    }
+  }
+
+  public static class UserDao {
+    public String getById(int id) {
+      return "diguage-" + id;
+    }
+  }
+
+  public static class UserService {
+    private String desc = "testBean";
+
+    @Resource
+    private UserDao userDao;
+
+    public String getDesc() {
+      System.out.println("getDesc");
+      this.test();
+      System.out.println("--this----------getDesc");
+      return desc;
+    }
+
+    public void setDesc(String desc) {
+      this.desc = desc;
+      // 使用 @EnableAspectJAutoProxy(exposeProxy = true) 打开 exposeProxy = true
+      // 则必须这样写，才能获取到当前的代理对象，然后调用的方法才是被 AOP 处理后的方法。
+      // 使用 this.methodName() 调用，依然调用的是原始的、未经 AOP 处理的方法
+      UserService) AopContext.currentProxy(.test();
+      System.out.println("--AopContext----setDesc");
+    }
+
+    public void test() {
+      System.out.println("----------------test");
+    }
+
+    public String getById(int id) {
+      return userDao.getById(id);
+    }
+  }
+}
+```
+
+## 关键代码
+
+Spring 代码庞大，除去测试代码，还有 22 多万行正式的 Java 代码。所以，如果不能抽丝剥茧，那么肯定会掉进坑里爬不出来。所以，要选择一些关键代码去重点阅读。
+
+其实，在前面的文章中，几乎已经把关键代码都列出来了。大家可以重点关注这几篇文章：
+
+1. [Spring 启动流程概述 - "地瓜哥"博客网](https://www.diguage.com/post/spring-startup-process-overview/)
+2. [Spring Bean 生命周期概述 - "地瓜哥"博客网](https://www.diguage.com/post/spring-bean-lifecycle-overview/)
+3. [Spring AOP 处理流程概述 - "地瓜哥"博客网](https://www.diguage.com/post/spring-aop-process-overview/)
+4. [Spring AOP 源码分析：入门 - "地瓜哥"博客网](https://www.diguage.com/post/spring-aop-bootstrap/)
+5. [Spring AOP 源码分析：获得通知 - "地瓜哥"博客网](https://www.diguage.com/post/spring-aop-get-advices/)
+6. [Spring AOP 源码分析：创建代理（一） - "地瓜哥"博客网](https://www.diguage.com/post/spring-aop-create-proxy-jdk/)
+7. [Spring AOP 源码分析：创建代理（二） - "地瓜哥"博客网](https://www.diguage.com/post/spring-aop-create-proxy-cglib/)
+
+学习 Spring 源码，一个关键点就是学习 Spring 支持的扩展点，一方面可以帮助理解 Spring 的设计；另外一方面也可以帮助我们在需要的时候，对 Spring 做一定的扩展，简化我们的代码。下面这几篇文章重点介绍了 Spring 支持的扩展点以及这些扩展点的应用示例：
+
+1. [Spring 扩展点概览及实践 - "地瓜哥"博客网](https://www.diguage.com/post/spring-extensions-overview/)
+2. [Spring 扩展点实践：整合 MyBATIS - "地瓜哥"博客网](https://www.diguage.com/post/spring-extensions-and-mybatis/)
+3. [Spring 扩展点实践：整合 Apache Dubbo（一） - "地瓜哥"博客网](https://www.diguage.com/post/spring-extensions-and-dubbo-1/)
+4. [Spring 扩展点实践：整合 Apache Dubbo（二） - "地瓜哥"博客网](https://www.diguage.com/post/spring-extensions-and-dubbo-2/)
+
+除此之外，通过对 Spring 源码实现的了解，还要可以更快地定位问题原因，寻找出合适的解决方案：
+
+1. [源码剖析 Spring 循环依赖 - "地瓜哥"博客网](https://www.diguage.com/post/spring-circular-dependence/)
+2. [add Jakarta Annotations API by diguage · Pull Request #367 · seata/seata-samples](https://github.com/seata/seata-samples/pull/367) — 这个 PR 还要求对 Dubbo 的源码实现有一点的了解。
+
+## 奇技淫巧
+
+在调试代码时，D瓜哥也积累了一些小技巧，分享给大家：
+
+1. 直接在 Spring 源码上加注释，例如： [diguage/spring-framework/ConfigurationClassPostProcessor.java at analysis](https://github.com/diguage/spring-framework/blob/analysis/spring-context/src/main/java/org/springframework/context/annotation/ConfigurationClassPostProcessor.java#L300)。
+2. 有问题，随时记录在册，方便后续跟进和解决。例如： [diguage/spring-framework/notes.adoc at analysis](https://github.com/diguage/spring-framework/blob/analysis/truman/docs/notes.adoc)。
+3. 针对不同场景，写不同的测试代码来调试。例如： [diguage/spring-framework/truman/src/main/java/com/diguage/truman at analysis](https://github.com/diguage/spring-framework/tree/analysis/truman/src/main/java/com/diguage/truman)。
+
+## gradle安装
+
+[gradle下载地址列表](https://services.gradle.org/versions/all)(下载对应版本)
+
+查看项目`gradle-wrapper.properties`文件
+
+```properties
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-5.6.4-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+```
+
+**1、配置变量**
+
+变量名：GRADLE_HOME（变量值：解压到的目录）
+
+变量名：GRADLE_USER_HOME（变量值：自定义Gradle仓库目录或者Maven的仓库目录）
+
+变量名：Path（变量值：%GRADLE_HOME%\bin;）
+
+**2、配置Gradle仓库源**
+
+在Gradle安装目录下的 init.d 文件夹下，新建一个 init.gradle 文件，里面填写以下配置
+
+```
+buildscript {
+  repositories {
+    maven { url 'https://maven.aliyun.com/repository/public';}
+    maven { url 'https://maven.aliyun.com/repositories/jcenter'; }
+    maven { url 'https://maven.aliyun.com/repositories/google'; }
+    maven { url 'https://maven.aliyun.com/repository/central'; }
+    maven { url 'https://maven.aliyun.com/repository/spring/'; }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin'; }
+    mavenLocal()
+    mavenCentral()
+  }
+}
+
+allprojects {
+  repositories {
+    maven { url 'https://maven.aliyun.com/repository/public';}
+    maven { url 'https://maven.aliyun.com/repositories/jcenter'; }
+    maven { url 'https://maven.aliyun.com/repositories/google'; }
+    maven { url 'https://maven.aliyun.com/repository/central'; }
+    maven { url 'https://maven.aliyun.com/repository/spring/'; }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin'; }
+    mavenLocal()
+    mavenCentral()
+  }
+}
+```
+
+
+
+## PlantUML
+
+[IDEA使用PlantUML画流程图.puml格式文件](https://blog.csdn.net/yu1014745867/article/details/118114447)
+
+[PlantUML 简介](https://plantuml.com/zh/)
+
+## IDEA
+
+spring源码导入低版本IDEA因为对应gradle插件问题，导致导入编译出错，可以从下列位置获取：
+
+>  J:\装机软件\02 装软件\IDEA-2021

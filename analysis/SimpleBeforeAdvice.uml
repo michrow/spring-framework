@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.springframework.aop.framework.adapter.SimpleBeforeAdvice</OriginalElement>
+  <nodes>
+    <node x="0.0" y="160.0">org.springframework.aop.framework.adapter.SimpleBeforeAdvice</node>
+    <node x="25.0" y="80.0">org.springframework.aop.BeforeAdvice</node>
+    <node x="49.0" y="0.0">org.aopalliance.aop.Advice</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.springframework.aop.BeforeAdvice" target="org.aopalliance.aop.Advice" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.aop.framework.adapter.SimpleBeforeAdvice" target="org.springframework.aop.BeforeAdvice" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="100.0" y="95.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
